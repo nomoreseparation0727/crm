@@ -50,7 +50,14 @@ def main() -> None:
                         continue  # already ingested
 
                 log.info("fetching information table for %s (report date %s)", filing.accession_number, filing.report_date)
-                holdings = sec_edgar.fetch_information_table(cik, filing.accession_number)
+                try:
+                    holdings = sec_edgar.fetch_information_table(cik, filing.accession_number)
+                except Exception:  # noqa: BLE001
+                    # Very old filings (pre-2013 XML mandate) or one-off format
+                    # quirks can make a specific filing unparseable. Skip it
+                    # rather than aborting every later (parseable) filing too.
+                    log.warning("skipping unparseable filing %s", filing.accession_number, exc_info=True)
+                    continue
 
                 with conn.cursor() as cur:
                     cur.execute(
