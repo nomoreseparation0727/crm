@@ -37,7 +37,7 @@ class Config:
 
     @property
     def funds_index_url(self) -> str:
-        return os.environ.get("BURGUNDY_FUNDS_URL", f"{self.website_base_url}/funds/")
+        return os.environ.get("BURGUNDY_FUNDS_URL", f"{self.website_base_url}/equity/")
 
     @property
     def sec_cik(self) -> str | None:
