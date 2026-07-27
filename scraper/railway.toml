@@ -1,0 +1,17 @@
+# Railway service config for the scraper/cron worker.
+#
+# When creating this service in the Railway dashboard, leave "Root Directory"
+# as the repo root (this file is discovered via dockerfilePath below, which
+# is relative to the repo root so the Dockerfile's COPY of ../db still works).
+#
+# Set the schedule in the dashboard's "Cron Schedule" field (Settings ->
+# Cron Schedule) -- railway.toml's [deploy] cronSchedule is honored for
+# services created from this file too. Runs daily at 06:00 UTC (~15:00 KST)
+# by default; adjust to taste.
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "scraper/Dockerfile"
+
+[deploy]
+cronSchedule = "0 6 * * *"
+restartPolicyType = "NEVER"
