@@ -33,9 +33,7 @@ class Config:
 
     @property
     def team_page_url(self) -> str:
-        # Best-guess default -- verify against the live site and override via
-        # env if the real path differs (see README "Tuning the website scraper").
-        return os.environ.get("BURGUNDY_TEAM_URL", f"{self.website_base_url}/people/")
+        return os.environ.get("BURGUNDY_TEAM_URL", f"{self.website_base_url}/our-team/")
 
     @property
     def funds_index_url(self) -> str:
