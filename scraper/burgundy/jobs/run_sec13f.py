@@ -6,6 +6,7 @@ quarterly (within 45 days of quarter end), so most runs will see nothing new.
 from __future__ import annotations
 
 import logging
+from datetime import date
 
 from ..config import config
 from ..db import finish_scrape_run, get_conn, get_or_create_company, start_scrape_run
@@ -14,6 +15,11 @@ from ..sources import sec_edgar
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 log = logging.getLogger("run_sec13f")
+
+# This tracker cares about recent/ongoing trends, not a full historical
+# backfill -- and older filings predate the XML information-table mandate,
+# so they aren't reliably parseable anyway (see the skip below).
+MIN_REPORT_DATE = date(2018, 1, 1)
 
 
 def main() -> None:
@@ -41,6 +47,9 @@ def main() -> None:
             log.info("found %d 13F-HR filing(s) in recent window", len(filings))
 
             for filing in filings:
+                if filing.report_date < MIN_REPORT_DATE:
+                    continue
+
                 with conn.cursor() as cur:
                     cur.execute(
                         "SELECT id FROM sec13f_filings WHERE accession_number = %s",
