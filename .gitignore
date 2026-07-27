@@ -1,0 +1,12 @@
+# Python (scraper)
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# env files
+.env
+.env.local
+
+# misc
+.DS_Store

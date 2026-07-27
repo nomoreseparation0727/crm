@@ -1,0 +1,12 @@
+# Railway service config for the Next.js dashboard (always-on web service).
+# Set "Root Directory" to `dashboard/` when creating this service in the
+# Railway dashboard -- unlike the scraper, this one builds fine from its own
+# folder since it has no cross-directory dependency on db/.
+[build]
+builder = "NIXPACKS"
+
+[deploy]
+startCommand = "npm run start"
+healthcheckPath = "/"
+healthcheckTimeout = 100
+restartPolicyType = "ON_FAILURE"
