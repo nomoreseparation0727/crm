@@ -20,24 +20,26 @@ def get_conn() -> Iterator[Any]:
         conn.close()
 
 
-def get_or_create_company(conn, name: str, website: str | None = None) -> int:
+def get_or_create_company(conn, name: str, website: str | None = None, slug: str | None = None) -> int:
     with conn.cursor() as cur:
         cur.execute("SELECT id FROM companies WHERE name = %s", (name,))
         row = cur.fetchone()
         if row:
+            if slug:
+                cur.execute("UPDATE companies SET slug = %s WHERE id = %s AND slug IS NULL", (slug, row[0]))
             return row[0]
         cur.execute(
-            "INSERT INTO companies (name, website) VALUES (%s, %s) RETURNING id",
-            (name, website),
+            "INSERT INTO companies (name, website, slug) VALUES (%s, %s, %s) RETURNING id",
+            (name, website, slug),
         )
         return cur.fetchone()[0]
 
 
-def start_scrape_run(conn, source: str) -> int:
+def start_scrape_run(conn, source: str, company_id: int | None = None) -> int:
     with conn.cursor() as cur:
         cur.execute(
-            "INSERT INTO scrape_runs (source, status) VALUES (%s, 'running') RETURNING id",
-            (source,),
+            "INSERT INTO scrape_runs (source, company_id, status) VALUES (%s, %s, 'running') RETURNING id",
+            (source, company_id),
         )
         return cur.fetchone()[0]
 

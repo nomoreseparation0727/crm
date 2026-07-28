@@ -3,16 +3,23 @@ import { query } from "./db";
 export interface Company {
   id: number;
   name: string;
+  slug: string | null;
   website: string | null;
   sec_cik: string | null;
 }
 
-export async function getCompany(name: string): Promise<Company | null> {
+export async function getCompanyBySlug(slug: string): Promise<Company | null> {
   const rows = await query<Company>(
-    "SELECT id, name, website, sec_cik FROM companies WHERE name = $1",
-    [name]
+    "SELECT id, name, slug, website, sec_cik FROM companies WHERE slug = $1",
+    [slug]
   );
   return rows[0] ?? null;
+}
+
+export async function getAllCompanies(): Promise<Company[]> {
+  return query<Company>(
+    "SELECT id, name, slug, website, sec_cik FROM companies WHERE slug IS NOT NULL ORDER BY name"
+  );
 }
 
 export interface AumPoint {

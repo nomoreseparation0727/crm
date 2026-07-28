@@ -1,7 +1,7 @@
-import { COMPANY_NAME } from "@/lib/constants";
+import { notFound } from "next/navigation";
 import { formatDate, formatPct, formatUsdThousands } from "@/lib/format";
 import {
-  getCompany,
+  getCompanyBySlug,
   getLatestFundHoldings,
   getLatestSec13FFiling,
   getSec13FHoldings,
@@ -10,14 +10,15 @@ import {
 
 export const dynamic = "force-dynamic";
 
-export default async function HoldingsPage() {
-  const company = await getCompany(COMPANY_NAME);
+export default async function HoldingsPage({
+  params,
+}: {
+  params: Promise<{ company: string }>;
+}) {
+  const { company: slug } = await params;
+  const company = await getCompanyBySlug(slug);
   if (!company) {
-    return (
-      <div className="card p-6 text-sm" style={{ color: "var(--text-muted)" }}>
-        No data yet for &quot;{COMPANY_NAME}&quot;.
-      </div>
-    );
+    notFound();
   }
 
   const [filing, fundHoldings] = await Promise.all([
@@ -35,9 +36,9 @@ export default async function HoldingsPage() {
         <h1 className="text-xl font-semibold mb-1">Korean holdings</h1>
         <p className="text-sm mb-3" style={{ color: "var(--text-muted)" }}>
           Fund fact-sheet holdings tagged as South Korea. This will only show
-          Korean equities that Burgundy discloses in a fund&apos;s published
-          top holdings -- it is not a full portfolio (SEC 13F below never
-          covers Korean-listed shares directly).
+          Korean equities that {company.name} discloses in a fund&apos;s
+          published top holdings -- it is not a full portfolio (SEC 13F below
+          never covers Korean-listed shares directly).
         </p>
         <HoldingsTable holdings={koreanFundHoldings} highlight />
       </section>

@@ -1,18 +1,19 @@
-import { COMPANY_NAME } from "@/lib/constants";
+import { notFound } from "next/navigation";
 import { formatDate } from "@/lib/format";
-import { getCompany, getCurrentTeam, getRecentChangeEvents } from "@/lib/queries";
+import { getCompanyBySlug, getCurrentTeam, getRecentChangeEvents } from "@/lib/queries";
 import EventFeed from "@/components/EventFeed";
 
 export const dynamic = "force-dynamic";
 
-export default async function TeamPage() {
-  const company = await getCompany(COMPANY_NAME);
+export default async function TeamPage({
+  params,
+}: {
+  params: Promise<{ company: string }>;
+}) {
+  const { company: slug } = await params;
+  const company = await getCompanyBySlug(slug);
   if (!company) {
-    return (
-      <div className="card p-6 text-sm" style={{ color: "var(--text-muted)" }}>
-        No data yet for &quot;{COMPANY_NAME}&quot;.
-      </div>
-    );
+    notFound();
   }
 
   const [team, allEvents] = await Promise.all([
