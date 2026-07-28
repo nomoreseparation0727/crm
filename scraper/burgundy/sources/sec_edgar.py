@@ -32,7 +32,7 @@ def _headers() -> dict:
 
 def resolve_cik(company_name: str) -> Optional[str]:
     """Best-effort CIK lookup by company name via the classic EDGAR company
-    search. Prefer setting BURGUNDY_SEC_CIK explicitly (config.sec_cik) --
+    search. Prefer setting CompanyConfig.sec_cik explicitly in companies.py --
     this is a fallback for convenience only and can match the wrong entity
     if there are similarly-named filers."""
     resp = requests.get(
